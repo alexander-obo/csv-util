@@ -7,8 +7,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ColumnsSplitter {
 
@@ -16,7 +15,7 @@ public class ColumnsSplitter {
         CSVFormat format = CSVFormat.DEFAULT;
         try (BufferedReader reader = Util.getBufferedReader(inputFileName);
              PrintWriter writer = Util.getPrintWriter(outputFileName)) {
-            Iterable<CSVRecord> records = format.parse(reader);
+            List<CSVRecord> records = format.parse(reader).getRecords();
             List<List<String>> filterRecords = filterRecords(records, columnsIndexes);
             CSVPrinter csvPrinter = new CSVPrinter(writer, format);
             for (List<String> record : filterRecords) {
@@ -25,7 +24,7 @@ public class ColumnsSplitter {
         }
     }
 
-    public static List<List<String>> filterRecords(Iterable<CSVRecord> records, List<Integer> columnsIndexes) {
+    public static List<List<String>> filterRecords(List<CSVRecord> records, List<Integer> columnsIndexes) {
         List<List<String>> filteredRecords = new ArrayList<>();
         for (CSVRecord record : records) {
             List<String> filteredRecord = new ArrayList<>();
@@ -35,6 +34,19 @@ public class ColumnsSplitter {
             filteredRecords.add(filteredRecord);
         }
         return filteredRecords;
+    }
+
+    public static List<List<String>> filterRecordsByColumnHeaders(List<CSVRecord> records, List<String> headers) {
+        CSVRecord headerRecord = records.get(0);
+        Map<String, Integer> mappedHeader = new HashMap<>();
+        for (int i = 0; i < headerRecord.size(); i++) {
+            mappedHeader.put(headerRecord.get(i), i);
+        }
+        List<Integer> columnsIndexes = new ArrayList<>();
+        for (String header : headers) {
+            columnsIndexes.add(mappedHeader.get(header));
+        }
+        return filterRecords(records, columnsIndexes);
     }
 
 }
