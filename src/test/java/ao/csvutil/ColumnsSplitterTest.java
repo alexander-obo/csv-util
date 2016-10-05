@@ -16,11 +16,10 @@ public class ColumnsSplitterTest {
     public void testRecordsFiltrationByColumnsIndexes() {
         String input = getClass().getResource("/test_data.csv").getFile();
         List<Integer> indexes = Arrays.asList(1, 2);
-        System.out.println(input);
         try {
             BufferedReader reader = Util.getBufferedReader(input);
             List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
-            List<List<String>> filteredRecords = ColumnsSplitter.filterRecords(records, indexes);
+            List<List<String>> filteredRecords = ColumnsSplitter.filterRecordsByColumnsIndexes(records, indexes);
             Assert.assertEquals(4, filteredRecords.size());
 
             List<String> record0 = filteredRecords.get(0);
@@ -46,7 +45,7 @@ public class ColumnsSplitterTest {
         try {
             BufferedReader reader = Util.getBufferedReader(input);
             List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
-            List<List<String>> filteredRecords = ColumnsSplitter.filterRecordsByColumnHeaders(records, headers);
+            List<List<String>> filteredRecords = ColumnsSplitter.filterRecordsByColumnsHeaders(records, headers);
             Assert.assertEquals(4, filteredRecords.size());
 
             List<String> record0 = filteredRecords.get(0);

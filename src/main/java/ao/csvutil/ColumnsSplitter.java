@@ -11,20 +11,25 @@ import java.util.*;
 
 public class ColumnsSplitter {
 
-    public static void split(String inputFileName, String outputFileName, List<Integer> columnsIndexes) throws IOException {
-        CSVFormat format = CSVFormat.DEFAULT;
-        try (BufferedReader reader = Util.getBufferedReader(inputFileName);
-             PrintWriter writer = Util.getPrintWriter(outputFileName)) {
-            List<CSVRecord> records = format.parse(reader).getRecords();
-            List<List<String>> filterRecords = filterRecords(records, columnsIndexes);
-            CSVPrinter csvPrinter = new CSVPrinter(writer, format);
-            for (List<String> record : filterRecords) {
-                csvPrinter.printRecord(record);
-            }
+    private static final CSVFormat FORMAT = CSVFormat.DEFAULT;
+
+    public static void splitByColumnsIndexes(String inputFileName, String outputFileName, List<Integer> columnsIndexes) throws IOException {
+        try (BufferedReader reader = Util.getBufferedReader(inputFileName)) {
+            List<CSVRecord> records = FORMAT.parse(reader).getRecords();
+            List<List<String>> filterRecords = filterRecordsByColumnsIndexes(records, columnsIndexes);
+            write(outputFileName, FORMAT, filterRecords);
         }
     }
 
-    public static List<List<String>> filterRecords(List<CSVRecord> records, List<Integer> columnsIndexes) {
+    public static void splitByColumnsHeaders(String inputFileName, String outputFileName, List<String> headers) throws IOException {
+        try (BufferedReader reader = Util.getBufferedReader(inputFileName)) {
+            List<CSVRecord> records = FORMAT.parse(reader).getRecords();
+            List<List<String>> filterRecords = filterRecordsByColumnsHeaders(records, headers);
+            write(outputFileName, FORMAT, filterRecords);
+        }
+    }
+
+    public static List<List<String>> filterRecordsByColumnsIndexes(List<CSVRecord> records, List<Integer> columnsIndexes) {
         List<List<String>> filteredRecords = new ArrayList<>();
         for (CSVRecord record : records) {
             List<String> filteredRecord = new ArrayList<>();
@@ -36,7 +41,7 @@ public class ColumnsSplitter {
         return filteredRecords;
     }
 
-    public static List<List<String>> filterRecordsByColumnHeaders(List<CSVRecord> records, List<String> headers) {
+    public static List<List<String>> filterRecordsByColumnsHeaders(List<CSVRecord> records, List<String> headers) {
         CSVRecord headerRecord = records.get(0);
         Map<String, Integer> mappedHeader = new HashMap<>();
         for (int i = 0; i < headerRecord.size(); i++) {
@@ -46,7 +51,15 @@ public class ColumnsSplitter {
         for (String header : headers) {
             columnsIndexes.add(mappedHeader.get(header));
         }
-        return filterRecords(records, columnsIndexes);
+        return filterRecordsByColumnsIndexes(records, columnsIndexes);
     }
 
+    private static void write(String outputFileName, CSVFormat format, List<List<String>> filterRecords) throws IOException {
+        try (PrintWriter writer = Util.getPrintWriter(outputFileName);
+             CSVPrinter csvPrinter = new CSVPrinter(writer, format)) {
+            for (List<String> record : filterRecords) {
+                csvPrinter.printRecord(record);
+            }
+        }
+    }
 }
