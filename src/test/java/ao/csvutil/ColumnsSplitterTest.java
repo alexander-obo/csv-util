@@ -16,8 +16,7 @@ public class ColumnsSplitterTest {
     public void testRecordsFiltrationByColumnsIndexes() {
         String input = getClass().getResource("/test_data.csv").getFile();
         List<Integer> indexes = Arrays.asList(1, 2);
-        try {
-            BufferedReader reader = IOFactory.getBufferedReader(input);
+        try (BufferedReader reader = IOFactory.getBufferedReader(input)) {
             List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
             List<List<String>> filteredRecords = ColumnsSplitter.filterRecordsByColumnsIndexes(records, indexes);
             Assert.assertEquals(4, filteredRecords.size());
@@ -42,8 +41,7 @@ public class ColumnsSplitterTest {
     public void testRecordsFiltrationByColumnsHeaders() {
         String input = getClass().getResource("/test_data.csv").getFile();
         List<String> headers = Arrays.asList("Phone", "Gender");
-        try {
-            BufferedReader reader = IOFactory.getBufferedReader(input);
+        try (BufferedReader reader = IOFactory.getBufferedReader(input)) {
             List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
             List<List<String>> filteredRecords = ColumnsSplitter.filterRecordsByColumnsHeaders(records, headers);
             Assert.assertEquals(4, filteredRecords.size());
