@@ -2,7 +2,7 @@ package ao.csvutil;
 
 import java.io.*;
 
-public final class Util {
+public final class IOFactory {
 
     static BufferedReader getBufferedReader(String fileName) throws FileNotFoundException {
         return new BufferedReader(new FileReader(fileName));
@@ -15,6 +15,6 @@ public final class Util {
     /**
      * Prevent initialization.
      */
-    private Util() {
+    private IOFactory() {
     }
 }

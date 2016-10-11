@@ -14,7 +14,7 @@ public class ColumnsSplitter {
     private static final CSVFormat FORMAT = CSVFormat.DEFAULT;
 
     public static void splitByColumnsIndexes(String inputFileName, String outputFileName, List<Integer> columnsIndexes) throws IOException {
-        try (BufferedReader reader = Util.getBufferedReader(inputFileName)) {
+        try (BufferedReader reader = IOFactory.getBufferedReader(inputFileName)) {
             List<CSVRecord> records = FORMAT.parse(reader).getRecords();
             List<List<String>> filterRecords = filterRecordsByColumnsIndexes(records, columnsIndexes);
             write(outputFileName, FORMAT, filterRecords);
@@ -22,7 +22,7 @@ public class ColumnsSplitter {
     }
 
     public static void splitByColumnsHeaders(String inputFileName, String outputFileName, List<String> headers) throws IOException {
-        try (BufferedReader reader = Util.getBufferedReader(inputFileName)) {
+        try (BufferedReader reader = IOFactory.getBufferedReader(inputFileName)) {
             List<CSVRecord> records = FORMAT.parse(reader).getRecords();
             List<List<String>> filterRecords = filterRecordsByColumnsHeaders(records, headers);
             write(outputFileName, FORMAT, filterRecords);
@@ -55,7 +55,7 @@ public class ColumnsSplitter {
     }
 
     private static void write(String outputFileName, CSVFormat format, List<List<String>> filterRecords) throws IOException {
-        try (PrintWriter writer = Util.getPrintWriter(outputFileName);
+        try (PrintWriter writer = IOFactory.getPrintWriter(outputFileName);
              CSVPrinter csvPrinter = new CSVPrinter(writer, format)) {
             for (List<String> record : filterRecords) {
                 csvPrinter.printRecord(record);
