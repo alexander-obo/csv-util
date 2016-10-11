@@ -49,7 +49,11 @@ public class ColumnsSplitter {
         }
         List<Integer> columnsIndexes = new ArrayList<>();
         for (String header : headers) {
-            columnsIndexes.add(mappedHeader.get(header));
+            Integer index = mappedHeader.get(header);
+            if (index == null) {
+                throw new IllegalArgumentException("No '" + header + "' header in CSV file");
+            }
+            columnsIndexes.add(index);
         }
         return filterRecordsByColumnsIndexes(records, columnsIndexes);
     }

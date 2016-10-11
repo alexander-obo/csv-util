@@ -63,4 +63,23 @@ public class ColumnsSplitterTest {
             Assert.fail(ex.getMessage());
         }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoSuchHeaderInFile() {
+        String input = getClass().getResource("/test_data.csv").getFile();
+        List<String> nonexistentHeader = Arrays.asList("Weight");
+        IllegalArgumentException expectedException = null;
+        try (BufferedReader reader = IOFactory.getBufferedReader(input)) {
+            List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
+            ColumnsSplitter.filterRecordsByColumnsHeaders(records, nonexistentHeader);
+        } catch (IOException ex) {
+            Assert.fail(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            expectedException = ex;
+        }
+        if (expectedException != null) {
+            Assert.assertEquals("No 'Weight' header in CSV file", expectedException.getMessage());
+            throw expectedException;
+        }
+    }
 }
