@@ -14,4 +14,4 @@ _splitByColumnsIndexes_ method accepts next parameters:
 _splitByColumnsHeaders_ method accepts next parameters:
     * String input - absolute path to input file
     * String output - absolute path to output file
-    * List\<String\> indexes - column headers
+    * List\<String\> headers - column headers
