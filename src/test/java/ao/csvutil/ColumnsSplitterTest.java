@@ -2,15 +2,32 @@ package ao.csvutil;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
 public class ColumnsSplitterTest {
+
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+
+    @Before
+    public void setUp() {
+        System.setErr(new PrintStream(errContent));
+    }
+
+    @After
+    public void tearDown() {
+        System.setErr(null);
+    }
 
     @Test
     public void testRecordsFiltrationByColumnsIndexes() {
@@ -62,8 +79,9 @@ public class ColumnsSplitterTest {
         }
     }
 
+    @Ignore("Print to stderr instead of throw exception")
     @Test(expected = IllegalArgumentException.class)
-    public void testNoSuchHeaderInFile() {
+    public void testNoSuchHeaderInFile_throwException() {
         String input = getClass().getResource("/test_data.csv").getFile();
         List<String> nonexistentHeader = Arrays.asList("Weight");
         IllegalArgumentException expectedException = null;
@@ -80,4 +98,18 @@ public class ColumnsSplitterTest {
             throw expectedException;
         }
     }
+
+    @Test
+    public void testNoSuchHeaderInFile_printToStdErr() {
+        String input = getClass().getResource("/test_data.csv").getFile();
+        List<String> nonexistentHeader = Arrays.asList("Weight");
+        try (BufferedReader reader = IOFactory.getBufferedReader(input)) {
+            List<CSVRecord> records = CSVFormat.DEFAULT.parse(reader).getRecords();
+            ColumnsSplitter.filterRecordsByColumnsHeaders(records, nonexistentHeader);
+        } catch (IOException ex) {
+            Assert.fail(ex.getMessage());
+        }
+        Assert.assertEquals("No 'Weight' header in CSV file\n", errContent.toString());
+    }
+
 }

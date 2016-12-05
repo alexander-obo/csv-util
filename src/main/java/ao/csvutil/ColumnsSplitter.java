@@ -51,9 +51,11 @@ public class ColumnsSplitter {
         for (String header : headers) {
             Integer index = mappedHeader.get(header);
             if (index == null) {
-                throw new IllegalArgumentException("No '" + header + "' header in CSV file");
+//                throw new IllegalArgumentException("No '" + header + "' header in CSV file");
+                System.err.println("No '" + header + "' header in CSV file");
+            } else {
+                columnsIndexes.add(index);
             }
-            columnsIndexes.add(index);
         }
         return filterRecordsByColumnsIndexes(records, columnsIndexes);
     }
